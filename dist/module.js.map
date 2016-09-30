@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/module.js"],"names":["NotificationCtrl"],"mappings":";;;;;;;;AAAQA,4B,sBAAAA,gB;;;wCAGJA,gB;;iCACAA,gB","file":"module.js","sourcesContent":["import {NotificationCtrl} from './notification_ctrl';\n\nexport {\n    NotificationCtrl,\n    NotificationCtrl as PanelCtrl\n};\n"]}

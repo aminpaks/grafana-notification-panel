@@ -1,0 +1,25 @@
+{
+    "type": "panel",
+    "name": "Notification",
+    "id": "aminpaks-notification-panel",
+
+    "info": {
+        "description": "Notification for grafana",
+        "author": {
+            "name": "Amin Paks.",
+            "url": "https://www.aminpaks.com"
+        },
+        "keywords": ["notification", "panel"],
+        "logos": {
+            "small": "src/img/notification_logo_small.png",
+            "large": "src/img/notification_logo_large.png"
+        },
+        "version": "1.0.0",
+        "updated": "2016-09-10"
+    },
+
+    "dependencies": {
+        "grafanaVersion": "3.x.x",
+        "plugins": []
+    }
+}
