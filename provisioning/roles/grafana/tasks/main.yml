@@ -1,0 +1,57 @@
+---
+# tasks file for grafana
+
+- name: Add Grafana repository
+  copy:
+    dest: /etc/yum.repos.d/grafana.repo
+    content: |
+      [grafana]
+      name=grafana
+      baseurl=https://packagecloud.io/grafana/stable/el/6/$basearch
+      repo_gpgcheck=0
+      enabled=1
+      gpgcheck=0
+      gpgkey=https://packagecloud.io/gpg.key https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
+      sslverify=0
+      sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+  become: yes
+# install packages needed for this role
+- yum:
+    name: "{{grafana_packages}}"
+    state: present
+    validate_certs: no
+  become: yes
+  notify:
+    - restart grafana-server
+
+- name: copy grafana config file
+  become: yes
+  template: src=templates/etc/grafana/grafana.ini.j2 dest=/etc/grafana/grafana.ini
+  notify:
+   - restart grafana-server
+
+
+- name: start grafana server
+  become: yes
+  service: name=grafana-server state=restarted enabled=yes
+
+- name: wait for port 3000
+  wait_for: host=localhost  port=3000
+
+- name: create grafana datasources
+  uri:
+    url: http://localhost:{{grafana_http_port}}/api/datasources
+    method: POST
+    body:
+      "name": "sample_datebase"
+      "type": "influxdb"
+      "url": "http://localhost:8086"
+      "access": "direct"
+      "user": "admin"
+      "password": "admin"
+      "database": "sample_database"
+    body_format: json
+    user: "{{grafana_api_user}}"
+    password: "{{grafana_api_pass}}"
+    force_basic_auth: yes
+  ignore_errors: yes
