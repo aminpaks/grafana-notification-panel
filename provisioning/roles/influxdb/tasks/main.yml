@@ -1,0 +1,44 @@
+---
+# tasks file for influxdb
+- name: Add InfluxDB repository
+  copy:
+    dest: /etc/yum.repos.d/influxdb.repo
+    content: |
+      [influxdb]
+      name = InfluxDB Repository - CentOS \$releasever
+      baseurl = https://repos.influxdata.com/centos/\$releasever/\$basearch/stable
+      enabled = 1
+      gpgcheck = 1
+      gpgkey = https://repos.influxdata.com/influxdb.key
+  become: yes
+
+- name: Install InfluxDB packages
+  package: name=influxdb state=present
+  become: yes
+
+- name: Modify InfluxDB hostname
+  replace:
+    dest=/etc/influxdb/influxdb.conf
+    regexp='^# hostname = "localhost"$'
+    replace='hostname = \"{{ ansible_hostname }}\"'
+    backup=yes
+  become: yes
+
+- name: Start the InfluxDB service
+  service: name=influxdb state=restarted enabled=yes
+  become: yes
+
+- name: Pause for InfluxDB service
+  pause: seconds=3
+
+- name: Create sample database
+  command: /usr/bin/influx -execute 'CREATE DATABASE sample_database'
+  ignore_errors: yes
+
+# - name: Load some test data into sample database
+#   uri:
+#     url: http://{{ ansible_hostname }}:8086/write?db=sample_database
+#     method: POST
+#     body: "random_ints,host=server_{{ 10 | random }} value={{ 100 | random }}"
+#     status_code: 204
+#   with_sequence: start=1 end=10

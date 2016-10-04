@@ -1,0 +1,30 @@
+---
+- hosts: all
+  tasks:
+   - package: name=python-pip state=present
+     become: yes
+   - pip: name=requests state=present
+     become: yes
+   - copy:
+       dest: /etc/systemd/system/feeder.service
+       content: |
+        [Unit]
+        Description = making network connection up
+        After = network.target
+        [Service]
+        ExecStart = /vagrant/provisioning/scripts/feeder.py
+        [Install]
+        WantedBy = multi-user.target
+     become: yes
+   - service: name=feeder enabled=yes state=started
+     become: yes
+
+  roles:
+   - grafana
+   - influxdb
+
+  post_tasks:
+    - file: src=/vagrant dest=/var/lib/grafana/plugins/grafana-notification-panel  state=link owner=grafana group=grafana
+      become: yes
+    - service: name=grafana-server state=restarted
+      become: yes

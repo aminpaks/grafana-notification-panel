@@ -1,0 +1,8 @@
+---
+# defaults file for graphite
+grafana_url_path: ''
+grafana_http_port: 3000
+
+grafana_api_user: admin
+grafana_api_pass: admin
+

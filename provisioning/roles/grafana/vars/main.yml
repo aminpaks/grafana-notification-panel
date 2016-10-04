@@ -1,0 +1,7 @@
+---
+# vars file for grafana
+grafana_packages:
+  - shadow-utils
+  - fontconfig
+  - grafana
+  - python-httplib2
